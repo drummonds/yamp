@@ -1,11 +1,9 @@
 #!/bin/env python
 """
 
- Python 2.7 Script to expand YAML macros
+ Python 3.7 Script to expand YAML macros
 
 """
-from __future__ import print_function
-
 import os
 
 import re
@@ -319,7 +317,7 @@ def merge_maps(mappy, bindings):
         if not type(item) == dict:
             raise(YampException('Error: non-map passed to merge "{}" from {}'.format(item, rawitem)))
         else:
-            for k,v in item.iteritems():
+            for k,v in item.items():
                 result[k] = v
     return result
 
@@ -628,8 +626,8 @@ def is_function(tree, bindings):
 
     func = None
     k = None    
-    if len(tree.keys()) == 1:
-        k = tree.keys()[0]
+    if len(tree) == 1:
+        k = list(tree.keys())[0]
     elif "if" in tree: # Special case :-(
         k = "if"
     func = lookup_function(k)
@@ -637,7 +635,7 @@ def is_function(tree, bindings):
         return func, tree[k]
     # At this point we have len(keys()) > 1 and its not an "if"
     # so we cannot have a function under any key...
-    for k,v in tree.iteritems():
+    for k,v in tree.items():
         func = lookup_function(k)        
         if type(func) == tuple:
             raise(YampException('ERROR: too many keys in macro {}'.format(tree)))
@@ -683,7 +681,7 @@ def expand(tree, bindings):
                 return(func[1](tree, rhs, bindings))
 
         # Just a normal map - not a function
-        for k,v in tree.iteritems():
+        for k,v in tree.items():
 
             if type(k) == str and k.startswith('^'):
                 variable_name = k[1:]
@@ -706,21 +704,6 @@ def expand(tree, bindings):
         return newdict
     else:
         return tree
-
-def byteify(input):
-    """
-    Function to replace all Unicode strings with plain-old-ascii (UTF-8) ones. See author's description:
-    https://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-of-unicode-from-json/13105359#13105359 
-    """
-    if isinstance(input, dict):
-        return {byteify(key): byteify(value)
-                for key, value in input.iteritems()}
-    elif isinstance(input, list):
-        return [byteify(element) for element in input]
-    elif isinstance(input, unicode):
-        return input.encode('utf-8')
-    else:
-        return input
 
 def expand_file(filename, bindings, expandafterload=True, outputfile=None):
     """
@@ -771,7 +754,7 @@ def expand_file(filename, bindings, expandafterload=True, outputfile=None):
         Process JSON data (no expansions)
         """
         try:
-            data = byteify(json.load(open(path)))
+            data = json.load(open(path))
             return data
         except YampException as e:
             print("ERROR: {}\n{}\n".format(path, e), file=sys.stderr)

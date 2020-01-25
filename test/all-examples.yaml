@@ -31,7 +31,7 @@ include:
   - ../examples/multi_define.yaml
   - ../examples/python.yaml
   - ../examples/quote.yaml
-  - ../examples/range.yaml
+  #- ../examples/range.yaml  # Currently missing
   - ../examples/readme.yaml
   - ../examples/recursive.yaml
   - ../examples/repeat.yaml
